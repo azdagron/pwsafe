@@ -31,12 +31,16 @@ func defaultPath() string {
 	return filepath.Join(u.HomeDir, "default.psafe")
 }
 
-func makePassphraseFn(passphrase string) func() (string, error) {
-	return func() (string, error) {
+func makePassphraseFn(passphrase string, out *string) func() (string, error) {
+	return func() (val string, err error) {
 		if passphrase == "" {
-			return speakeasy.Ask("Passphrase: ")
+			val, err = speakeasy.Ask("Passphrase: ")
 		} else {
-			return passphrase, nil
+			val, err = passphrase, nil
 		}
+		if out != nil {
+			*out = val
+		}
+		return val, err
 	}
 }

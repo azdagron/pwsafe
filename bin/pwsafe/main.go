@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path"
 )
 
 func main() {
@@ -42,10 +43,13 @@ func maine() (err error) {
 }
 
 func usage(reason string) {
+	r := os.Stdout
 	if reason != "" {
-		fmt.Println(reason)
+		r := os.Stderr
+		fmt.Fprintln(r, reason)
 	}
-	fmt.Println("usage: %s <command> (command args)")
+	fmt.Fprintf(r, "usage: %s <command> (command args)\n",
+		path.Base(os.Args[0]))
 	if reason != "" {
 		os.Exit(-1)
 	} else {

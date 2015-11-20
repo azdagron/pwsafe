@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/atotto/clipboard"
-	"github.com/azdagron/pwsafe"
+	"github.com/azdagron/pwsafe/v3"
 )
 
 type listCommand struct {
@@ -39,7 +39,7 @@ func (c *listCommand) Execute(args []string) (err error) {
 		return strings.Repeat("*", len(x))
 	}
 
-	db, err := pwsafe.Load(c.Path, makePassphraseFn(c.Passphrase))
+	db, err := v3.Open(c.Path, makePassphraseFn(c.Passphrase, nil))
 	if err != nil {
 		return err
 	}
@@ -54,21 +54,21 @@ func (c *listCommand) Execute(args []string) (err error) {
 
 	for _, record := range db.Records() {
 		if re != nil &&
-			!re.MatchString(record.Group) &&
-			!re.MatchString(record.Title) {
+			!re.MatchString(record.Group()) &&
+			!re.MatchString(record.Title()) {
 			continue
 		}
-		fmt.Println("[", record.UUID, "]")
+		fmt.Println("[", record.UUID(), "]")
 		printFields([]fieldDescription{
-			{"Title", record.Title},
-			{"Username", record.Username},
-			{"Password", masker(record.Password)},
-			{"Notes", record.Notes},
-			{"Group", record.Group},
-			{"URL", record.URL},
-			{"Ctime", record.Ctime},
-			{"Atime", record.Atime},
-			{"Mtime", record.Mtime},
+			{"Title", record.Title()},
+			{"Username", record.Username()},
+			{"Password", masker(record.Password())},
+			{"Notes", record.Notes()},
+			{"Group", record.Group()},
+			{"URL", record.URL()},
+			{"Ctime", record.Ctime()},
+			{"Atime", record.Atime()},
+			{"Mtime", record.Mtime()},
 		})
 		fmt.Println()
 	}
